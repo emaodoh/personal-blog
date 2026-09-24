@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Blog</title>
+    <link rel="stylesheet" href="{{url_for('static', filename= 'style.css')}}">
+</head>
+<body>
+
+<header>
+
+    <nav>
+        <h2>MyBlog</h2>
+
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Articles</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="{{url_for('admin')}}" class="admin-btn">Admin</a></li>
+        </ul>
+
+    </nav>
+
+</header>
+
+
+<section class="hero">
+
+    <div class="hero-text">
+
+        <h1>Welcome to My Personal Blog</h1>
+
+        <p>
+            Here I share my journey in software engineering,
+            artificial intelligence, programming, personal growth,
+            and technology. I hope these articles inspire you to
+            keep learning and building amazing things.
+        </p>
+
+        <a href="#articles" class="btn">
+            Explore Articles
+        </a>
+
+    </div>
+
+</section>
+
+
+<section id="articles" class="articles">
+
+
+    <h2>Latest Articles</h2>
+
+    <div class="article-grid">
+
+        <div class="card">
+            <h3>Welcome to My Blog</h3>
+            <p>
+                Discover why I started this blog and what you can expect
+                from my programming journey.
+            </p>
+
+            <a href="{{ url_for('blog', article_id=1) }}">Read  Article →</a>
+        </div>
+
+
+        <div class="card">
+            <h3>Why I Started Programming</h3>
+            <p>
+                Learn what inspired me to become a software developer
+                and how my journey began.
+            </p>
+
+            <a href="{{url_for('blog', article_id=2)}}">Read Article →</a>
+        </div>
+
+
+        <div class="card">
+            <h3>Building My First Flask Project</h3>
+            <p>
+                Lessons I learned while building my first real-world
+                web application.
+            </p>
+
+            <a href="{{url_for('blog', article_id=3)}}">Read Article →</a>
+        </div>
+
+
+        <div class="card">
+            <h3>Git & GitHub Basics</h3>
+            <p>
+                The tools every developer should learn for version
+                control and collaboration.
+            </p>
+
+            <a href="{{url_for('blog', article_id=4)}}">Read Article →</a>
+        </div>
+
+
+        <div class="card">
+            <h3>Understanding REST APIs</h3>
+            <p>
+                A beginner-friendly guide to APIs and how they power
+                modern applications.
+            </p>
+
+            <a href="{{url_for('blog', article_id=5)}}">Read Article →</a>
+        </div>
+
+
+        <div class="card">
+            <h3>My AI Learning Roadmap</h3>
+            <p>
+                The skills and technologies I am learning to become
+                an AI Engineer.
+            </p>
+
+            <a href="{{url_for('blog', article_id=6)}}">Read Article →</a>
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <p>
+        © 2026 My Personal Blog • Built with HTML, CSS and Flask py frame work
+    </p>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='admin.css')}}">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            MyBlog Admin
+        </div>
+
+
+        <ul>
+
+            <li>
+                <a href="admin_dashboard.html">
+                    Dashboard
+                </a>
+            </li>
+
+
+            <li>
+                <a href="add_blog.html" class="add-btn">
+                    + Add Blog
+                </a>
+            </li>
+
+
+            <li>
+                <a href="{{url_for('home')}}">
+                    View Blog
+                </a>
+            </li>
+
+
+            <li>
+                <a href="admin.html">
+                    Logout
+                </a>
+            </li>
+
+
+        </ul>
+
+
+    </nav>
+
+
+</header>
+
+
+
+
+<section class="dashboard">
+
+
+    <div class="heading">
+
+        <h1>
+            Blog Management
+        </h1>
+
+        <p>
+            Create, edit and manage your articles.
+        </p>
+
+    </div>
+
+
+
+    <div class="blog-container">
+
+
+
+        <div class="blog-card">
+
+
+            <h2>
+                Welcome to My Blog
+            </h2>
+
+
+            <p>
+                Discover why I started this blog and what you can expect
+                from my programming journey.
+            </p>
+
+
+            <div class="actions">
+
+
+                <a href="edit_blog.html" class="edit">
+                    Edit
+                </a>
+
+
+                <a href="#" class="delete">
+                    Delete
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="blog-card">
+
+
+            <h2>
+                Why I Started Programming
+            </h2>
+
+
+            <p>
+                Learn what inspired me to become a software developer
+                and how my journey began.
+            </p>
+
+
+
+            <div class="actions">
+
+
+                <a href="edit_blog.html" class="edit">
+                    Edit
+                </a>
+
+
+                <a href="#" class="delete">
+                    Delete
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="blog-card">
+
+
+            <h2>
+                Building My First Flask Project
+            </h2>
+
+
+            <p>
+                Lessons learned while building my first real-world
+                web application.
+            </p>
+
+
+
+            <div class="actions">
+
+
+                <a href="edit_blog.html" class="edit">
+                    Edit
+                </a>
+
+
+                <a href="#" class="delete">
+                    Delete
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+</section>
+
+
+
+
+<footer>
+
+    <p>
+        © 2026 MyBlog Admin Panel
+    </p>
+
+</footer>
+
+
+
+</body>
+
+</html>
