@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Blog</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}" >
+
+</head>
+
+<body>
+
+<header>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            MyBlog Admin
+        </div>
+
+        <ul>
+
+            <li>
+                <a href="{{url_for('admin_dashboard')}}">
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="add_blog.html">
+                    Add Blog
+                </a>
+            </li>
+
+            <li>
+                <a href="{{url_for('home')}}">
+                    View Site
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+
+<section class="editor">
+
+    <div class="editor-card">
+
+        <h1>Edit Article</h1>
+
+        <form action="/edit_blog/{{ article['id'] }}" method="post" >
+
+            <label>Article Title</label>
+
+            <input
+                type="text"
+                name="title"
+                value="{{article['title']}}"
+            >
+
+
+            <label>Article Content</label>
+
+            <textarea rows="18" name="content">
+                {{ article["content"]}}
+            </textarea>
+
+
+            <div class="buttons">
+
+                <button type="submit" class="save-btn">
+                    Save Changes
+                </button>
+
+                <a href="{{url_for('admin_dashboard')}}" class="cancel-btn">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+</body>
+
+</html>
