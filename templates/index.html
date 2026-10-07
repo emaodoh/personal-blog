@@ -51,75 +51,23 @@
 
 
     <h2>Latest Articles</h2>
-
+    {% for article in articles %}
     <div class="article-grid">
 
         <div class="card">
-            <h3>Welcome to My Blog</h3>
+            <h3>{{article["title"]}}</h3>
             <p>
-                Discover why I started this blog and what you can expect
-                from my programming journey.
+                {% if article["summary"] %}
+                    {{article["summary"]}}
+                {% endif %}
             </p>
 
-            <a href="{{ url_for('blog', article_id=1) }}">Read  Article →</a>
+            <a href="{{ url_for('blog', article_id=article['id']) }}">Read  Article →</a>
         </div>
 
-
-        <div class="card">
-            <h3>Why I Started Programming</h3>
-            <p>
-                Learn what inspired me to become a software developer
-                and how my journey began.
-            </p>
-
-            <a href="{{url_for('blog', article_id=2)}}">Read Article →</a>
-        </div>
-
-
-        <div class="card">
-            <h3>Building My First Flask Project</h3>
-            <p>
-                Lessons I learned while building my first real-world
-                web application.
-            </p>
-
-            <a href="{{url_for('blog', article_id=3)}}">Read Article →</a>
-        </div>
-
-
-        <div class="card">
-            <h3>Git & GitHub Basics</h3>
-            <p>
-                The tools every developer should learn for version
-                control and collaboration.
-            </p>
-
-            <a href="{{url_for('blog', article_id=4)}}">Read Article →</a>
-        </div>
-
-
-        <div class="card">
-            <h3>Understanding REST APIs</h3>
-            <p>
-                A beginner-friendly guide to APIs and how they power
-                modern applications.
-            </p>
-
-            <a href="{{url_for('blog', article_id=5)}}">Read Article →</a>
-        </div>
-
-
-        <div class="card">
-            <h3>My AI Learning Roadmap</h3>
-            <p>
-                The skills and technologies I am learning to become
-                an AI Engineer.
-            </p>
-
-            <a href="{{url_for('blog', article_id=6)}}">Read Article →</a>
-        </div>
 
     </div>
+    {% endfor %}
 
 </section>
 

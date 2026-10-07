@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add New Blog</title>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='add_blog.css')}}">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="logo">MyBlog Admin</div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{url_for('home')}}">View Blog</a>
+        </div>
+    </nav>
+</header>
+
+
+<main class="page-container">
+
+    <div class="page-heading">
+        <p class="label">NEW ARTICLE</p>
+        <h1>Create a New Blog Post</h1>
+
+        <p>
+            Write and publish a new article for your personal blog.
+        </p>
+    </div>
+
+
+    <form class="blog-editor" method="POST">
+
+        <!-- TITLE -->
+
+        <div class="form-section">
+
+            <label for="title">
+                Article Title
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Enter your article title..."
+                required
+            >
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="form-section">
+
+            <label for="summary">
+                Short Description
+            </label>
+
+            <textarea
+                id="summary"
+                name="summary"
+                class="summary"
+                placeholder="Write a short description that will appear on the homepage..."
+                required
+            ></textarea>
+
+        </div>
+
+
+        <!-- ARTICLE CONTENT -->
+
+        <div class="form-section">
+
+            <div class="content-heading">
+
+                <label for="content">
+                    Article Content
+                </label>
+
+                <span>
+                    Write your full article below
+                </span>
+
+            </div>
+
+
+            <textarea
+                required
+                id="content"
+                name="content"
+                class="article-content"
+                placeholder="Start writing your article here...
+
+Example:
+
+Introduction
+
+Write your introduction here.
+
+Why I Started
+
+Explain your story here.
+
+What I Learned
+
+Share the lessons you learned..."
+                
+            ></textarea>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="editor-actions">
+
+            <a
+                href="{{url_for('admin_dashboard')}}"
+                class="cancel-btn"
+            >
+                Cancel
+            </a>
+
+
+            <button
+                type="submit"
+                class="save-btn"
+            >
+                Add Article
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
+
+
+<footer>
+    <p>MyBlog Admin • Article Editor</p>
+</footer>
+
+</body>
+</html>

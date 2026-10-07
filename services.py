@@ -28,3 +28,16 @@ def edit_article(title, content, article_id):
             article["content"] = content
             article["title"] = title
             save_article(articles)
+
+def delete_article(article_id):
+    articles = load_article()
+
+    articles = [article for article in articles if article["id"] != article_id]
+
+    save_article(articles)
+
+def add_article(content, title, summary):
+    articles = load_article()
+
+    articles.append({"id":len(articles)+1, "title":title, "content":content, "summary":summary})
+    save_article(articles)
