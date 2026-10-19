@@ -2,14 +2,14 @@ import json
 
 
 def load_article():
-    with open("article.json", "r") as file:
+    with open("data/article.json", "r") as file:
         articles = json.load(file)
     
     return articles
     
 
 def save_article(articles):
-    with open("article.json", "w") as file:
+    with open("data/article.json", "w") as file:
         json.dump(articles, file, indent=3)
 
 
@@ -19,8 +19,17 @@ def get_article_by_id(article_id):
     for article in articles:
         if article["id"] == article_id:
             return article
+    
+    raise ValueError(f"Article with id: {article_id} is not found ")
 
 def edit_article(title, content, article_id):
+
+    check_id = get_article_by_id(article_id)
+
+    if not content or not title:
+
+        raise ValueError("Invalid input.")
+
     articles = load_article()
 
     for article in articles:
@@ -29,12 +38,22 @@ def edit_article(title, content, article_id):
             article["title"] = title
             save_article(articles)
 
+            return True
+    
+
 def delete_article(article_id):
     articles = load_article()
+
+    
+    article = get_article_by_id(article_id)
+    
+    
 
     articles = [article for article in articles if article["id"] != article_id]
 
     save_article(articles)
+
+    return True
 
 def add_article(content, title, summary):
     articles = load_article()
