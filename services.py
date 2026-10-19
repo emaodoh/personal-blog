@@ -41,3 +41,4 @@ def add_article(content, title, summary):
 
     articles.append({"id":len(articles)+1, "title":title, "content":content, "summary":summary})
     save_article(articles)
+

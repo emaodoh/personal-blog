@@ -8,7 +8,7 @@
 
     <title>Edit Blog</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', path='edit.css') }}" >
 
 </head>
 
@@ -55,7 +55,11 @@
     <div class="editor-card">
 
         <h1>Edit Article</h1>
-
+                {% if flash %}
+        <div class="{{ flash.category }}">
+        {{ flash.message }}
+        </div>
+        {% endif %}
         <form action="/edit_blog/{{ article['id'] }}" method="post" >
 
             <label>Article Title</label>

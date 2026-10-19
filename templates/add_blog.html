@@ -6,7 +6,7 @@
 
     <title>Add New Blog</title>
 
-    <link rel="stylesheet" href="{{url_for('static', filename='add_blog.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', path='add_blog.css')}}">
 </head>
 
 <body>
@@ -80,7 +80,11 @@
         <div class="form-section">
 
             <div class="content-heading">
-
+        {% if flash %}
+        <div class="{{ flash.category }}">
+        {{ flash.message }}
+        </div>
+        {% endif %}
                 <label for="content">
                     Article Content
                 </label>

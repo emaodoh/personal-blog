@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
 
-    <link rel="stylesheet" href="{{url_for('static', filename= 'login.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', path= 'login.css')}}">
 </head>
 
 <body>
@@ -20,7 +20,11 @@
         <p class="subtitle">
             Welcome back. Please login to manage your blog.
         </p>
-
+        {% if flash %}
+        <div class="{{ flash.category }}">
+        {{ flash.message }}
+        </div>
+        {% endif %}
 
         <form method="post" action="/login">
 
