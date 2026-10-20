@@ -26,19 +26,16 @@ def edit_article(title, content, article_id):
 
     check_id = get_article_by_id(article_id)
 
-    if not content or not title:
-
-        raise ValueError("Invalid input.")
-
     articles = load_article()
 
     for article in articles:
         if article["id"] == article_id:
             article["content"] = content
             article["title"] = title
+            article["summary"] = summary
             save_article(articles)
 
-            return True
+            return article
     
 
 def delete_article(article_id):
@@ -58,6 +55,9 @@ def delete_article(article_id):
 def add_article(content, title, summary):
     articles = load_article()
 
-    articles.append({"id":len(articles)+1, "title":title, "content":content, "summary":summary})
+    article = {"id":len(articles)+1, "title":title, "content":content, "summary":summary}
+    articles.append(article)
     save_article(articles)
+
+    return article
 
