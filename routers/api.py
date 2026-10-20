@@ -1,10 +1,17 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from .services import get_article_by_id, edit_article, delete_article, load_article, add_article
 
 
 
 router = APIRouter()
+
+
+class BaseArticle(BaseModel):
+    title: str
+    content: str
+    summary: str
 
 
 @router.get("/articles")
@@ -37,26 +44,30 @@ def delete_article_api(article_id: int):
         raise HTTPException(status_code= 404, detail=str(e))
 
 
+
+
+
 @router.put("/articles/{article_id}")
 
-def edit_article_api(article_id: int, title: str, content: str):
+def edit_article_api(article: BaseArticle):
     try:
-        edit = edit_article(title, content, article_id)
-
-        return {"message": "Article edited successfully."}
+        edit = edit_article(article.title, article.content, article.article_id, article.summary)
+        
+        return edit
 
     except ValueError as e:
 
         raise HTTPException(status_code=404, detail=str(e))
 
 
+
+
+
+
 @router.post("/articles")
 
-def add_article_api(title: str, content:str, summary: str):
+def add_article_api(article: BaseArticle):
 
-    if not title or not content or not summary:
-        raise HTTPException(status_code= 400, detail="All fields are required.")
+    article = add_article(article.content, article.title, article.summary)
 
-    add_article(content, title, summary)
-
-    return {"message": "Article added successfully."}
+    return article
