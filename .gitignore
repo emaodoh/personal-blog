@@ -12,6 +12,7 @@ __pycache__/
 !.env.example
 
 *.json
+!data/seed_articles.json
 *.db
 *.db-shm
 *.db-wal

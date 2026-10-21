@@ -1,5 +1,7 @@
 # Deployment Guide
 
+For Render-specific setup, see [RENDER.md](RENDER.md).
+
 ## 1. Runtime configuration
 
 Copy `.env.example` to a protected environment file and replace every placeholder:

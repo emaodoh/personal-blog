@@ -45,7 +45,7 @@ For the frontend, you can use HTML and CSS (no need for JavaScript for now). You
 
 Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for persistent storage, HTTPS with Let's Encrypt, environment configuration, and database backups.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for persistent storage, HTTPS with Let's Encrypt, environment configuration, and database backups. Render deployment is covered in [RENDER.md](RENDER.md).
 
 After completing this project, you will have practised templating, filesystem operations, basic authentication, form handling, and rendering HTML pages from the server. You can extend this project further by adding features like comments, categories, tags, search functionality, etc. Make sure to check the other backend projects that go into more advanced topics like databases, APIs, security best practices etc.
 

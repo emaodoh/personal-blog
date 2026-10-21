@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: personal-blog
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash -c "python scripts/seed_database.py && uvicorn app:app --host 0.0.0.0 --port $PORT --workers 1 --proxy-headers --forwarded-allow-ips='*'"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: DATABASE_PATH
+        value: /var/lib/myblog/data.db
+      - key: BACKUP_DIR
+        value: /var/lib/myblog/backups
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+    disk:
+      name: blog-data
+      mountPath: /var/lib/myblog
+      sizeGB: 1
