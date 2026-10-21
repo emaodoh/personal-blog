@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found — MyBlog{% endblock %}
+{% block body_class %}error-page{% endblock %}
+
+{% block content %}
+<section class="error-shell">
+    <div class="error-card">
+        <p class="eyebrow">Lost field note</p>
+        <div class="error-code" aria-hidden="true">404</div>
+        <h1>This page wandered off.</h1>
+        <p>
+            The address may be mistyped, or the story may have moved somewhere
+            else in the notebook.
+        </p>
+        <a class="button" href="{{ url_for('home') }}">Back to the journal</a>
+    </div>
+</section>
+{% endblock %}

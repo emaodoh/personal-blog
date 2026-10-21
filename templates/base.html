@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c1220">
+    <title>{% block title %}MyBlog — Field notes on code and making{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', path='site.css') }}">
+</head>
+<body class="{% block body_class %}public-page{% endblock %}">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    {% block header %}
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="brand" href="{{ url_for('home') }}" aria-label="MyBlog home">
+                <span class="brand-mark" aria-hidden="true">M</span>
+                <span class="brand-copy">
+                    <strong>MyBlog</strong>
+                    <small>field notes &amp; code</small>
+                </span>
+            </a>
+
+            <nav class="site-nav" aria-label="Primary navigation">
+                <a href="{{ url_for('home') }}#articles">Stories</a>
+                <a href="{{ url_for('home') }}#about">About</a>
+                <a class="nav-pill" href="{{ url_for('login') }}">Admin</a>
+            </nav>
+        </div>
+    </header>
+    {% endblock %}
+
+    <main id="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="brand-mark" aria-hidden="true">M</span>
+                <div>
+                    <h2>MyBlog</h2>
+                    <p>Ideas, built out loud.</p>
+                </div>
+            </div>
+            <p class="footer-meta">
+                © 2026 MyBlog · Built with FastAPI &amp; SQLite · <a href="{{ url_for('login') }}">Admin</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

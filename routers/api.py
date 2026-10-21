@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from .auth import require_admin_api
 from .services import get_article_by_id, edit_article, delete_article, load_article, add_article
 
 
@@ -22,7 +23,6 @@ def get_article():
 
 
 @router.get("/articles/{article_id}")
-
 def get_article_by_id_api(article_id: int):
     try:
         article = get_article_by_id(article_id)
@@ -34,8 +34,10 @@ def get_article_by_id_api(article_id: int):
 
 
 @router.delete("/articles/{article_id}")
-
-def delete_article_api(article_id: int):
+def delete_article_api(
+    article_id: int,
+    _admin: str = Depends(require_admin_api),
+):
     try:
         delete_article(article_id)
         return { "message": "Article deleted successfully."}
@@ -48,15 +50,20 @@ def delete_article_api(article_id: int):
 
 
 @router.put("/articles/{article_id}")
-
-def edit_article_api(article: BaseArticle):
+def edit_article_api(
+    article_id: int,
+    article: BaseArticle,
+    _admin: str = Depends(require_admin_api),
+):
     try:
-        edit = edit_article(article.title, article.content, article.article_id, article.summary)
-        
-        return edit
+        return edit_article(
+            article_id,
+            article.title,
+            article.content,
+            article.summary,
+        )
 
     except ValueError as e:
-
         raise HTTPException(status_code=404, detail=str(e))
 
 
@@ -65,9 +72,8 @@ def edit_article_api(article: BaseArticle):
 
 
 @router.post("/articles")
-
-def add_article_api(article: BaseArticle):
-
-    article = add_article(article.content, article.title, article.summary)
-
-    return article
+def add_article_api(
+    article: BaseArticle,
+    _admin: str = Depends(require_admin_api),
+):
+    return add_article(article.title, article.content, article.summary)

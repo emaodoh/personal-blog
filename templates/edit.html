@@ -1,101 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "admin_base.html" %}
 
-<head>
+{% block title %}Edit {{ article["title"] }} — MyBlog Studio{% endblock %}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block content %}
+<div class="admin-shell">
+    <div class="editor-layout">
+        <aside class="editor-aside">
+            <p class="eyebrow">Editing · Entry {{ "%03d"|format(article["id"]) }}</p>
+            <h1 class="editor-title">Refine the story.</h1>
+            <p>
+                Tighten the title, sharpen the summary, or take the whole piece
+                in a new direction. Nothing is permanent until you save it.
+            </p>
+            <div class="editor-tip">
+                <strong>Quick check</strong>
+                Does the title make a promise the story keeps? Does the summary
+                make someone want to find out?
+            </div>
+        </aside>
 
-    <title>Edit Blog</title>
+        <form class="editor-panel editor-form" action="/edit_blog/{{ article['id'] }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', path='edit.css') }}" >
+            {% if flash %}
+            <div class="notice {{ flash.category }}" role="alert">{{ flash.message }}</div>
+            {% endif %}
 
-</head>
-
-<body>
-
-<header>
-
-    <nav class="navbar">
-
-        <div class="logo">
-            MyBlog Admin
-        </div>
-
-        <ul>
-
-            <li>
-                <a href="{{url_for('admin_dashboard')}}">
-                    Dashboard
-                </a>
-            </li>
-
-            <li>
-                <a href="add_blog.html">
-                    Add Blog
-                </a>
-            </li>
-
-            <li>
-                <a href="{{url_for('home')}}">
-                    View Site
-                </a>
-            </li>
-
-        </ul>
-
-    </nav>
-
-</header>
-
-
-
-<section class="editor">
-
-    <div class="editor-card">
-
-        <h1>Edit Article</h1>
-                {% if flash %}
-        <div class="{{ flash.category }}">
-        {{ flash.message }}
-        </div>
-        {% endif %}
-        <form action="/edit_blog/{{ article['id'] }}" method="post" >
-
-            <label>Article Title</label>
-
-            <input
-                type="text"
-                name="title"
-                value="{{article['title']}}"
-            >
-
-
-            <label>Article Content</label>
-
-            <textarea rows="18" name="content">
-                {{ article["content"]}}
-            </textarea>
-
-
-            <div class="buttons">
-
-                <button type="submit" class="save-btn">
-                    Save Changes
-                </button>
-
-                <a href="{{url_for('admin_dashboard')}}" class="cancel-btn">
-                    Cancel
-                </a>
-
+            <div class="editor-field">
+                <label for="title">Article title</label>
+                <input
+                    id="title"
+                    type="text"
+                    name="title"
+                    value="{{ article['title'] }}"
+                    required
+                >
             </div>
 
+            <div class="editor-field">
+                <label for="summary">Short description</label>
+                <textarea id="summary" name="summary" required>{{ article["summary"] }}</textarea>
+                <span class="field-help">This is the preview readers see on the homepage.</span>
+            </div>
+
+            <div class="editor-field">
+                <label for="content">Article content</label>
+                <textarea id="content" name="content" class="editor-content" required>{{ article["content"] }}</textarea>
+            </div>
+
+            <div class="editor-actions">
+                <a class="btn-secondary" href="{{ url_for('admin_dashboard') }}">Cancel</a>
+                <button class="button" type="submit">Save changes</button>
+            </div>
         </form>
-
     </div>
-
-</section>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

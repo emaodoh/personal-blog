@@ -1,23 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for( 'static', path='style.css')}}">
-    <title>Document</title>
-</head>
-<body>
-        {% if flash %}
-        <div class="{{ flash.category }}">
-        {{ flash.message }}
-        </div>
+{% extends "base.html" %}
+
+{% block title %}{{ article["title"] }} — MyBlog{% endblock %}
+{% block body_class %}article-page{% endblock %}
+
+{% block content %}
+<header class="article-hero">
+    <div class="article-hero-inner">
+        <a class="back-link" href="{{ url_for('home') }}#articles">← Back to the journal</a>
+        <p class="eyebrow">Journal · Entry {{ "%03d"|format(article["id"]) }}</p>
+        <h1 class="article-title">{{ article["title"] }}</h1>
+        {% if article["summary"] %}
+        <p class="article-deck">{{ article["summary"] }}</p>
         {% endif %}
-    <h1> {{ articles.title }}</h1>
-    
+        <div class="article-meta">
+            <span>MyBlog</span>
+            <span>{{ reading_time }} min read</span>
+            <span>Field notes</span>
+        </div>
+    </div>
+</header>
 
-    <article class="blog-content">
-        {{ articles.content }}
-    </article>
-
-</body>
-</html>
+<article class="article-shell">
+    <div class="article-body">{{ article["content"] }}</div>
+    <div class="article-end">
+        <span>End of entry {{ "%03d"|format(article["id"]) }}</span>
+        <a class="text-link" href="{{ url_for('home') }}#articles">Keep reading →</a>
+    </div>
+</article>
+{% endblock %}

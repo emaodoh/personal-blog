@@ -1,3 +1,20 @@
 .venv/
 
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+
+.env
+.env.*
+!.env.example
+
 *.json
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+backups/

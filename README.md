@@ -30,16 +30,22 @@ How to Implement
 Here are some guidelines to help you implement the personal blog:
 Storage
 
-To keep things simple for now, you can use the filesystem to store the articles. Each article will be stored as a separate file in a directory. The file will contain the title, content, and date of publication of the article. You can use JSON or Markdown format to store the articles.
+Articles are stored in a local SQLite database. Set `DATABASE_PATH` in production and keep the database on persistent storage. The `articles` table contains each article's title, summary, and content, and the schema is initialized automatically when the application starts.
 Backend
 
 You can use any programming language to build the backend of the blog. You don't have to make it as an API for this project, we have other projects for that. You can have pages that render the HTML directly from the server and forms that submit data to the server.
+
+Authentication
+
+The admin account is stored in the local SQLite database with a salted password hash. Provide `ADMIN_USERNAME` and `ADMIN_PASSWORD` through environment variables; the account is created or updated at startup. Successful logins create an HTTP-only, SameSite=Lax session that is marked Secure when `SESSION_COOKIE_SECURE=true`. All admin pages and article write APIs require that session. Logging out invalidates it immediately.
+
 Frontend
 
 For the frontend, you can use HTML and CSS (no need for JavaScript for now). You can use any templating engine to render the articles on the frontend.
-Authentication
 
-You can implement basic authentication for the admin section. You can either use the standard HTTP basic authentication or simply hardcode the username and password in the code for now and create a simple login page that will create a session for the admin.
+Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for persistent storage, HTTPS with Let's Encrypt, environment configuration, and database backups.
 
 After completing this project, you will have practised templating, filesystem operations, basic authentication, form handling, and rendering HTML pages from the server. You can extend this project further by adding features like comments, categories, tags, search functionality, etc. Make sure to check the other backend projects that go into more advanced topics like databases, APIs, security best practices etc.
 

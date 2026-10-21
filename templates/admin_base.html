@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block body_class %}admin-page{% endblock %}
+
+{% block header %}
+<header class="site-header">
+    <div class="site-header-inner">
+        <a class="brand" href="{{ url_for('admin_dashboard') }}" aria-label="MyBlog studio dashboard">
+            <span class="brand-mark" aria-hidden="true">M</span>
+            <span class="brand-copy">
+                <strong>MyBlog</strong>
+                <small>studio</small>
+            </span>
+        </a>
+
+        <nav class="site-nav" aria-label="Admin navigation">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('add_blog') }}">New story</a>
+            <a href="{{ url_for('home') }}">View site</a>
+            <a class="nav-pill" href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </div>
+</header>
+{% endblock %}

@@ -1,155 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "admin_base.html" %}
 
-<head>
+{% block title %}Studio dashboard — MyBlog{% endblock %}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Dashboard</title>
-
-    <link rel="stylesheet" href="{{url_for('static', path='admin.css')}}">
-
-</head>
-
-
-<body>
-
-
-<header>
-
-    <nav class="navbar">
-
-        <div class="logo">
-            MyBlog Admin
+{% block content %}
+<div class="admin-shell">
+    <section class="admin-hero">
+        <div>
+            <p class="eyebrow">Studio dashboard</p>
+            <h1>Your publishing desk.</h1>
+            <p>Write, refine, and send new field notes into the world.</p>
         </div>
+        <a class="button" href="{{ url_for('add_blog') }}">+ New story</a>
+    </section>
 
+    {% if flash %}
+    <div class="notice {{ flash.category }}" role="alert">{{ flash.message }}</div>
+    {% endif %}
 
-        <ul>
+    <section class="admin-stats" aria-label="Blog statistics">
+        <div class="stat-card">
+            <strong>{{ articles|length }}</strong>
+            <span>Published stories</span>
+        </div>
+        <div class="stat-card">
+            <strong>SQLite</strong>
+            <span>Local archive</span>
+        </div>
+        <div class="stat-card">
+            <strong>Live</strong>
+            <span>Session protected</span>
+        </div>
+    </section>
 
-            <li>
-                <a href="{{ url_for('admin_dashboard') }}">
-                    Dashboard
-                </a>
-            </li>
-
-
-            <li>
-                <a href="{{url_for('add_blog')}}" class="add-btn">
-                    + Add Blog
-                </a>
-            </li>
-
-
-            <li>
-                <a href="{{url_for('home')}}">
-                    View Blog
-                </a>
-            </li>
-
-
-            <li>
-                <a href="{{url_for('home')}}">
-                    Logout
-                </a>
-            </li>
-
-
-        </ul>
-
-
-    </nav>
-
-
-</header>
-
-
-
-
-<section class="dashboard">
-
-
-    <div class="heading">
-
-        <h1>
-            Blog Management
-        </h1>
-
-        <p>
-            Create, edit and manage your articles.
-        </p>
-
+    <div class="admin-list-head">
+        <h2>All stories</h2>
+        <span>{{ articles|length }} entries in the notebook</span>
     </div>
 
-
-    {% for article in articles %}
-    <div class="blog-container">
-
-
-
-        <div class="blog-card">
-
-
-        
-            
-            <h2>
-                {{ article["title"] }}
-            </h2>
-
-            
-
-
-            <div class="actions">
-
-
-                <a href="{{url_for ('edit_blog', article_id=article['id'])}}" class="edit">
-                    Edit
-                </a>
-                        {% if flash %}
-        <div class="{{ flash.category }}">
-        {{ flash.message }}
-        </div>
-        {% endif %}
-
-                <a href="{{url_for('delete_blog', article_id=article['id'])}}" class="delete">
-                    Delete
-                </a>
-        
-
+    {% if articles %}
+    <section class="admin-list">
+        {% for article in articles %}
+        <article class="admin-story">
+            <div class="admin-story-index">{{ "%02d"|format(loop.index) }}</div>
+            <div class="admin-story-copy">
+                <h3>{{ article["title"] }}</h3>
+                {% if article["summary"] %}
+                <p>{{ article["summary"] }}</p>
+                {% else %}
+                <p>No summary yet.</p>
+                {% endif %}
             </div>
-
-
-        </div>
-
-
-
-
-
-        
-
-        </div>
-
-
-
+            <div class="admin-row-actions">
+                <a class="btn-small" href="{{ url_for('edit_blog', article_id=article['id']) }}">Edit</a>
+                <form class="inline-form" method="post" action="{{ url_for('delete_blog', article_id=article['id']) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button class="btn-danger" type="submit">Delete</button>
+                </form>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    {% else %}
+    <div class="empty-state">
+        <h3>No stories yet.</h3>
+        <p>Start with a title and let the first field note take shape.</p>
     </div>
-
-    {% endfor %}
-
-</section>
-
-
-
-
-<footer>
-
-    <p>
-        © 2026 MyBlog Admin Panel
-    </p>
-
-</footer>
-
-
-
-</body>
-
-</html>
+    {% endif %}
+</div>
+{% endblock %}

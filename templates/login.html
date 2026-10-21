@@ -1,79 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+{% extends "base.html" %}
 
-    <link rel="stylesheet" href="{{url_for('static', path= 'login.css')}}">
-</head>
+{% block title %}Studio login — MyBlog{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 
-<body>
-
-
-<div class="login-container">
-
-    <div class="login-box">
-
-        <h1>Admin Login</h1>
-
-        <p class="subtitle">
-            Welcome back. Please login to manage your blog.
-        </p>
-        {% if flash %}
-        <div class="{{ flash.category }}">
-        {{ flash.message }}
+{% block content %}
+<section class="auth-shell">
+    <div class="auth-poster">
+        <div>
+            <p class="auth-label">The studio door</p>
+            <h1>The quiet place where the <em>notes</em> become stories.</h1>
         </div>
-        {% endif %}
-
-        <form method="post" action="/login">
-
-            <div class="input-group">
-
-                <label>Username</label>
-
-                <input 
-                    type="text"
-                    name="username"
-                    placeholder="Enter username"
-                    required
-                >
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>Password</label>
-
-                <input 
-                    type="password"
-                    name="password"
-                    placeholder="Enter password"
-                    required
-                >
-
-            </div>
-
-
-            <button type="submit">
-                Login
-            </button>
-
-
-        </form>
-
-
-        <a href="{{url_for('home')}}" class="back">
-            ← Back to Blog
-        </a>
-
-
+        <p class="auth-quote">
+            Sign in to edit the journal, publish a new field note, or tidy up
+            something that has been sitting in drafts for too long.
+        </p>
     </div>
 
+    <div class="auth-panel">
+        <div class="auth-card">
+            <p class="eyebrow">Admin access</p>
+            <h2>Welcome back.</h2>
+            <p class="auth-intro">Use your studio credentials to continue.</p>
 
-</div>
+            {% if flash %}
+            <div class="notice {{ flash.category }}" role="alert">{{ flash.message }}</div>
+            {% endif %}
 
+            <form class="auth-form" method="post" action="{{ url_for('login') }}">
+                <div class="form-field">
+                    <label for="username">Username</label>
+                    <input
+                        id="username"
+                        type="text"
+                        name="username"
+                        placeholder="Your username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
 
-</body>
-</html>
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button class="button" type="submit">Enter the studio</button>
+            </form>
+
+            <a class="auth-back" href="{{ url_for('home') }}">← Back to the blog</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
