@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0c1220">
-    <title>{% block title %}MyBlog — Field notes on code and making{% endblock %}</title>
+    <title>{% block title %}{{ settings.site_name if settings else 'Portfolio' }}{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="{{ url_for('static', path='site.css') }}">
@@ -15,17 +15,19 @@
     {% block header %}
     <header class="site-header">
         <div class="site-header-inner">
-            <a class="brand" href="{{ url_for('home') }}" aria-label="MyBlog home">
+            <a class="brand" href="{{ url_for('home') }}" aria-label="Home">
                 <span class="brand-mark" aria-hidden="true">M</span>
                 <span class="brand-copy">
-                    <strong>MyBlog</strong>
-                    <small>field notes &amp; code</small>
+                    <strong>{{ settings.site_name if settings else 'Portfolio' }}</strong>
+                    <small>{{ settings.role if settings else '' }}</small>
                 </span>
             </a>
 
             <nav class="site-nav" aria-label="Primary navigation">
-                <a href="{{ url_for('home') }}#articles">Stories</a>
-                <a href="{{ url_for('home') }}#about">About</a>
+                <a href="{{ url_for('home') }}#projects">Work</a>
+                <a href="{{ url_for('blog_index') }}">Blog</a>
+                <a href="{{ url_for('about_page') }}">About</a>
+                <a href="{{ url_for('contact_page') }}">Contact</a>
             </nav>
         </div>
     </header>
@@ -38,14 +40,14 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
-                <span class="brand-mark" aria-hidden="true">M</span>
+                <span class="brand-mark" aria-hidden="true">{{ (settings.owner_name if settings else 'P')[:1] }}</span>
                 <div>
-                    <h2>MyBlog</h2>
-                    <p>Ideas, built out loud.</p>
+                    <h2>{{ settings.owner_name if settings else 'Portfolio' }}</h2>
+                    <p>{{ settings.role if settings else '' }}</p>
                 </div>
             </div>
             <p class="footer-meta">
-                © 2026 MyBlog · Built with FastAPI &amp; SQLite · 
+                {% if settings is defined and settings.contact_email %}<a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{% endif %}
             </p>
         </div>
     </footer>

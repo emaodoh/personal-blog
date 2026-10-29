@@ -17,7 +17,7 @@ class BaseArticle(BaseModel):
 
 @router.get("/articles")
 def get_article():
-    articles = load_article()
+    articles = load_article(published_only=True)
 
     return articles
 
@@ -26,6 +26,8 @@ def get_article():
 def get_article_by_id_api(article_id: int):
     try:
         article = get_article_by_id(article_id)
+        if not article["is_published"]:
+            raise ValueError(f"Article with id: {article_id} is not found")
         return article
 
     except ValueError as e:

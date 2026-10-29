@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} — {{ settings.site_name }}{% endblock %}
+{% block content %}
+<section class="article-hero"><div class="article-hero-inner"><p class="eyebrow">{{ settings.owner_name }}</p><h1 class="article-title">{{ page.title }}</h1></div></section>
+<article class="article-shell page-copy">{{ page.content }}{% if page.slug == 'contact' %}<div class="project-actions">{% if settings.contact_email %}<a class="button" href="mailto:{{ settings.contact_email }}">Email me</a>{% endif %}{% if settings.github_url %}<a class="btn-secondary" href="{{ settings.github_url }}" target="_blank" rel="noopener">GitHub ↗</a>{% endif %}{% if settings.linkedin_url %}<a class="btn-secondary" href="{{ settings.linkedin_url }}" target="_blank" rel="noopener">LinkedIn ↗</a>{% endif %}</div>{% endif %}</article>
+{% endblock %}

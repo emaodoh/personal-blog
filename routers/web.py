@@ -1,6 +1,7 @@
 from pathlib import Path
+import secrets
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -25,6 +26,14 @@ from .services import (
     get_connection,
     get_article_by_id,
     load_article,
+    load_projects,
+    get_project_by_slug,
+    save_project,
+    delete_project,
+    load_pages,
+    save_page,
+    load_settings,
+    save_settings,
 )
 
 
@@ -34,13 +43,48 @@ templates = Jinja2Templates(directory=PROJECT_ROOT / "templates")
 router = APIRouter()
 
 
+def _save_uploaded_image(upload, folder):
+    extension = Path(upload.filename).suffix.lower()
+    allowed = {".jpg": "jpeg", ".jpeg": "jpeg", ".png": "png", ".webp": "webp", ".gif": "gif"}
+    if extension not in allowed:
+        raise HTTPException(status_code=400, detail="Use a JPG, PNG, WebP, or GIF image.")
+    image_data = upload.file.read(5 * 1024 * 1024 + 1)
+    if len(image_data) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Images must be 5 MB or smaller.")
+    image_type = allowed[extension]
+    valid_signature = (
+        (image_type == "jpeg" and image_data.startswith(b"\xff\xd8\xff"))
+        or (image_type == "png" and image_data.startswith(b"\x89PNG\r\n\x1a\n"))
+        or (image_type == "gif" and image_data[:6] in {b"GIF87a", b"GIF89a"})
+        or (image_type == "webp" and image_data[:4] == b"RIFF" and image_data[8:12] == b"WEBP")
+    )
+    if not valid_signature:
+        raise HTTPException(status_code=400, detail="The uploaded file is not a supported image.")
+    upload_dir = PROJECT_ROOT / "static" / "uploads" / folder
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"{secrets.token_hex(12)}{extension}"
+    (upload_dir / filename).write_bytes(image_data)
+    return f"/static/uploads/{folder}/{filename}"
+
+
 @router.get("/")
 def home(request: Request):
-    articles = load_article()
+    articles = load_article(published_only=True)[:3]
+    projects = load_projects(published_only=True, featured_only=True)[:3]
+    pages = load_pages()
+    settings = load_settings()
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"articles": articles},
+        context={"articles": articles, "projects": projects, "pages": pages, "settings": settings},
+    )
+
+
+@router.get("/blog")
+def blog_index(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="blog_index.html",
+        context={"articles": load_article(published_only=True), "settings": load_settings()},
     )
 
 
@@ -51,23 +95,60 @@ def blog(article_id: int, request: Request):
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    if not article["is_published"]:
+        raise HTTPException(status_code=404, detail="Article not found")
+
     word_count = len(article["content"].split())
     reading_time = max(1, round(word_count / 220))
     return templates.TemplateResponse(
         request=request,
         name="blog.html",
-        context={"article": article, "reading_time": reading_time},
+        context={"article": article, "reading_time": reading_time, "settings": load_settings()},
     )
+
+
+@router.get("/projects")
+def projects_index(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="projects.html",
+        context={"projects": load_projects(published_only=True), "settings": load_settings()},
+    )
+
+
+@router.get("/projects/{slug}")
+def project_detail(slug: str, request: Request):
+    try:
+        project = get_project_by_slug(slug)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if not project["is_published"]:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return templates.TemplateResponse(
+        request=request, name="project.html",
+        context={"project": project, "settings": load_settings()},
+    )
+
+
+@router.get("/about")
+def about_page(request: Request):
+    return templates.TemplateResponse(request=request, name="page.html", context={"page": load_pages()["about"], "settings": load_settings()})
+
+
+@router.get("/contact")
+def contact_page(request: Request):
+    return templates.TemplateResponse(request=request, name="page.html", context={"page": load_pages()["contact"], "settings": load_settings()})
 
 
 @router.get("/admin_dashboard")
 def admin_dashboard(request: Request, admin_session: dict = Depends(require_admin)):
     articles = load_article()
+    projects = load_projects()
     return templates.TemplateResponse(
         request=request,
         name="admin.html",
         context={
             "articles": articles,
+            "projects": projects,
             "csrf_token": admin_session["csrf_token"],
         },
     )
@@ -118,13 +199,14 @@ def edit_blog(
     title: str = Form(),
     content: str = Form(),
     summary: str = Form(),
+    is_published: str | None = Form(None),
     csrf_token: str = Form(...),
     _admin: dict = Depends(require_admin),
 ):
     validate_csrf_token(request, csrf_token)
 
     try:
-        edit_article(article_id, title, content, summary)
+        edit_article(article_id, title, content, summary, is_published == "on")
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -212,12 +294,118 @@ def add_blog(
     title: str = Form(),
     content: str = Form(),
     summary: str = Form(),
+    is_published: str | None = Form(None),
     csrf_token: str = Form(...),
     _admin: dict = Depends(require_admin),
 ):
     validate_csrf_token(request, csrf_token)
 
-    add_article(title, content, summary)
+    add_article(title, content, summary, is_published == "on")
+    return RedirectResponse(url="/admin_dashboard", status_code=303)
+
+
+@router.get("/admin/projects/new")
+def new_project_page(request: Request, admin_session: dict = Depends(require_admin)):
+    return templates.TemplateResponse(request=request, name="project_form.html", context={"project": None, "csrf_token": admin_session["csrf_token"]})
+
+
+@router.post("/admin/projects/new")
+def create_project(
+    request: Request, title: str = Form(), summary: str = Form(""),
+    description: str = Form(""), technologies: str = Form(""), image_url: str = Form(""),
+    demo_url: str = Form(""), repository_url: str = Form(""),
+    is_featured: str | None = Form(None), is_published: str | None = Form(None),
+    csrf_token: str = Form(...), image_file: UploadFile | None = File(None),
+    _admin: dict = Depends(require_admin),
+):
+    validate_csrf_token(request, csrf_token)
+    if image_file and image_file.filename:
+        image_url = _save_uploaded_image(image_file, "projects")
+    save_project(None, title, summary, description, technologies, image_url, demo_url,
+                 repository_url, is_featured == "on", is_published == "on")
+    return RedirectResponse(url="/admin_dashboard", status_code=303)
+
+
+@router.get("/admin/projects/{project_id}/edit")
+def edit_project_page(project_id: int, request: Request, admin_session: dict = Depends(require_admin)):
+    project = next((item for item in load_projects() if item["id"] == project_id), None)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return templates.TemplateResponse(request=request, name="project_form.html", context={"project": project, "csrf_token": admin_session["csrf_token"]})
+
+
+@router.post("/admin/projects/{project_id}/edit")
+def update_project(
+    project_id: int, request: Request, title: str = Form(), summary: str = Form(""),
+    description: str = Form(""), technologies: str = Form(""), image_url: str = Form(""),
+    demo_url: str = Form(""), repository_url: str = Form(""),
+    is_featured: str | None = Form(None), is_published: str | None = Form(None),
+    csrf_token: str = Form(...), image_file: UploadFile | None = File(None),
+    _admin: dict = Depends(require_admin),
+):
+    validate_csrf_token(request, csrf_token)
+    if image_file and image_file.filename:
+        image_url = _save_uploaded_image(image_file, "projects")
+    try:
+        save_project(project_id, title, summary, description, technologies, image_url,
+                     demo_url, repository_url, is_featured == "on", is_published == "on")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return RedirectResponse(url="/admin_dashboard", status_code=303)
+
+
+@router.post("/admin/projects/{project_id}/delete")
+def remove_project(project_id: int, request: Request, csrf_token: str = Form(...), _admin: dict = Depends(require_admin)):
+    validate_csrf_token(request, csrf_token)
+    try:
+        delete_project(project_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return RedirectResponse(url="/admin_dashboard", status_code=303)
+
+
+@router.get("/admin/pages/{slug}")
+def edit_page_form(slug: str, request: Request, admin_session: dict = Depends(require_admin)):
+    page = load_pages().get(slug)
+    if page is None:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return templates.TemplateResponse(request=request, name="page_form.html", context={"page": page, "csrf_token": admin_session["csrf_token"]})
+
+
+@router.post("/admin/pages/{slug}")
+def update_page(slug: str, request: Request, title: str = Form(), content: str = Form(), csrf_token: str = Form(...), _admin: dict = Depends(require_admin)):
+    validate_csrf_token(request, csrf_token)
+    if slug not in {"home", "about", "contact"}:
+        raise HTTPException(status_code=404, detail="Page not found")
+    save_page(slug, title, content)
+    return RedirectResponse(url="/admin_dashboard", status_code=303)
+
+
+@router.get("/admin/settings")
+def edit_settings_form(request: Request, admin_session: dict = Depends(require_admin)):
+    return templates.TemplateResponse(request=request, name="settings_form.html", context={"settings": load_settings(), "csrf_token": admin_session["csrf_token"]})
+
+
+@router.post("/admin/settings")
+def update_settings(
+    request: Request, site_name: str = Form(""), owner_name: str = Form(""),
+    role: str = Form(""), contact_email: str = Form(""), resume_url: str = Form(""),
+    github_url: str = Form(""), linkedin_url: str = Form(""), csrf_token: str = Form(...),
+    profile_image: UploadFile | None = File(None),
+    remove_profile_image: str | None = Form(None),
+    _admin: dict = Depends(require_admin),
+):
+    validate_csrf_token(request, csrf_token)
+    current_settings = load_settings()
+    profile_image_url = current_settings.get("profile_image_url", "")
+    if remove_profile_image == "on":
+        profile_image_url = ""
+    if profile_image and profile_image.filename:
+        profile_image_url = _save_uploaded_image(profile_image, "profile")
+    save_settings({"site_name": site_name, "owner_name": owner_name, "role": role,
+                   "contact_email": contact_email, "resume_url": resume_url,
+                   "github_url": github_url, "linkedin_url": linkedin_url,
+                   "profile_image_url": profile_image_url})
     return RedirectResponse(url="/admin_dashboard", status_code=303)
 
 

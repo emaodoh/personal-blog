@@ -1,0 +1,16 @@
+{% extends "admin_base.html" %}
+{% block title %}{% if project %}Edit project{% else %}New project{% endif %} — Studio{% endblock %}
+{% block content %}
+<div class="admin-shell"><div class="editor-layout"><aside class="editor-aside"><p class="eyebrow">Projects</p><h1 class="editor-title">{% if project %}Edit project{% else %}Add a project{% endif %}</h1><p>Save a title as a draft now, then fill in the story, image, and links whenever they are ready.</p></aside>
+<form class="editor-panel editor-form" method="post" enctype="multipart/form-data" action="{% if project %}/admin/projects/{{ project.id }}/edit{% else %}/admin/projects/new{% endif %}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="editor-field"><label for="title">Project title</label><input id="title" name="title" required value="{{ project.title if project else '' }}"></div>
+<div class="editor-field"><label for="summary">Short summary</label><textarea id="summary" name="summary">{{ project.summary if project else '' }}</textarea></div>
+<div class="editor-field"><label for="description">Description / case study</label><textarea class="editor-content" id="description" name="description">{{ project.description if project else '' }}</textarea></div>
+<div class="editor-field"><label for="technologies">Technologies</label><input id="technologies" name="technologies" placeholder="Python, FastAPI, SQLite" value="{{ project.technologies if project else '' }}"></div>
+<div class="editor-field"><label for="image_file">Project image (optional)</label>{% if project and project.image_url %}<img class="project-form-preview" src="{{ project.image_url }}" alt="Current image for {{ project.title }}">{% endif %}<input id="image_file" name="image_file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><span class="field-help">Choose a JPG, PNG, WebP, or GIF image up to 5 MB. Uploading a new image replaces the current one.</span><label for="image_url">Or use an image URL</label><input id="image_url" name="image_url" type="url" value="{{ project.image_url if project else '' }}"><span class="field-help">A wide screenshot works best. Leave both image fields empty to use the reserved placeholder.</span></div>
+<div class="editor-field"><label for="demo_url">Live demo URL</label><input id="demo_url" name="demo_url" type="url" value="{{ project.demo_url if project else '' }}"></div>
+<div class="editor-field"><label for="repository_url">Repository URL</label><input id="repository_url" name="repository_url" type="url" value="{{ project.repository_url if project else '' }}"></div>
+<label class="check-field"><input type="checkbox" name="is_featured" {% if project and project.is_featured %}checked{% endif %}> Feature on homepage</label>
+<label class="check-field"><input type="checkbox" name="is_published" {% if project and project.is_published %}checked{% endif %}> Published (otherwise saved as draft)</label>
+<div class="editor-actions"><a class="btn-secondary" href="{{ url_for('admin_dashboard') }}">Cancel</a><button class="button" type="submit">Save project</button></div></form></div></div>
+{% endblock %}

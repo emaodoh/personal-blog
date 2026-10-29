@@ -6,14 +6,14 @@
 {% block content %}
 <header class="article-hero">
     <div class="article-hero-inner">
-        <a class="back-link" href="{{ url_for('home') }}#articles">← Back to the journal</a>
+        <a class="back-link" href="{{ url_for('blog_index') }}">← Back to the blog</a>
         <p class="eyebrow">Journal · Entry {{ "%03d"|format(article["id"]) }}</p>
         <h1 class="article-title">{{ article["title"] }}</h1>
         {% if article["summary"] %}
         <p class="article-deck">{{ article["summary"] }}</p>
         {% endif %}
         <div class="article-meta">
-            <span>MyBlog</span>
+            <span>{{ settings.owner_name }}</span>
             <span>{{ reading_time }} min read</span>
             <span>Field notes</span>
         </div>
@@ -24,7 +24,7 @@
     <div class="article-body">{{ article["content"] }}</div>
     <div class="article-end">
         <span>End of entry {{ "%03d"|format(article["id"]) }}</span>
-        <a class="text-link" href="{{ url_for('home') }}#articles">Keep reading →</a>
+        <a class="text-link" href="{{ url_for('blog_index') }}">Keep reading →</a>
     </div>
 </article>
 {% endblock %}

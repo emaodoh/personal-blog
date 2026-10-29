@@ -1,0 +1,5 @@
+{% extends "admin_base.html" %}
+{% block title %}Edit {{ page.title }} — Studio{% endblock %}
+{% block content %}
+<div class="admin-shell"><div class="editor-layout"><aside class="editor-aside"><p class="eyebrow">Pages</p><h1 class="editor-title">Edit {{ page.title }}</h1><p>This content appears on your public {{ page.title|lower }} page.</p></aside><form class="editor-panel editor-form" method="post" action="/admin/pages/{{ page.slug }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><div class="editor-field"><label for="title">Page heading</label><input id="title" name="title" required value="{{ page.title }}"></div><div class="editor-field"><label for="content">Page content</label><textarea class="editor-content" id="content" name="content">{{ page.content }}</textarea></div><div class="editor-actions"><a class="btn-secondary" href="{{ url_for('admin_dashboard') }}">Cancel</a><button class="button" type="submit">Save page</button></div></form></div></div>
+{% endblock %}
