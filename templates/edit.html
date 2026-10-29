@@ -48,6 +48,8 @@
                 <textarea id="content" name="content" class="editor-content" required>{{ article["content"] }}</textarea>
             </div>
 
+            <label class="check-field"><input type="checkbox" name="is_published" {% if article.is_published %}checked{% endif %}> Published</label>
+
             <div class="editor-actions">
                 <a class="btn-secondary" href="{{ url_for('admin_dashboard') }}">Cancel</a>
                 <button class="button" type="submit">Save changes</button>

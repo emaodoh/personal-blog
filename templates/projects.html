@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Projects — {{ settings.site_name }}{% endblock %}
+{% block content %}
+<section class="stories-section listing-page">
+    <div class="section-heading"><div><p class="eyebrow">Selected work</p><h1>Projects</h1></div></div>
+    {% if projects %}<div class="story-grid">{% for project in projects %}<article class="story-card"><div class="project-media">{% if project.image_url %}<img class="project-thumb" src="{{ project.image_url }}" alt="Screenshot of {{ project.title }}">{% else %}<div class="project-image-placeholder" aria-label="Project image can be added later">Project image</div>{% endif %}</div><div class="story-card-top"><span class="story-kicker">Project{% if project.is_featured %} · Featured{% endif %}</span></div><h2><a href="{{ url_for('project_detail', slug=project.slug) }}">{{ project.title }}</a></h2><p>{{ project.summary or 'Project details coming soon.' }}</p>{% if project.technologies %}<p class="technology-list">{{ project.technologies }}</p>{% endif %}<a class="story-link" href="{{ url_for('project_detail', slug=project.slug) }}">View project ↗</a></article>{% endfor %}</div>{% else %}<div class="empty-state"><h2>Projects are on the way.</h2></div>{% endif %}
+</section>
+{% endblock %}

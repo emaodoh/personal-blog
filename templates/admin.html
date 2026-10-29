@@ -8,9 +8,9 @@
         <div>
             <p class="eyebrow">Studio dashboard</p>
             <h1>Your publishing desk.</h1>
-            <p>Write, refine, and send new field notes into the world.</p>
+            <p>Manage articles, projects, public pages, and site details.</p>
         </div>
-        <a class="button" href="{{ url_for('add_blog') }}">+ New story</a>
+        <a class="button" href="{{ url_for('new_project_page') }}">+ New project</a>
     </section>
 
     {% if flash %}
@@ -20,11 +20,11 @@
     <section class="admin-stats" aria-label="Blog statistics">
         <div class="stat-card">
             <strong>{{ articles|length }}</strong>
-            <span>Published stories</span>
+            <span>Articles</span>
         </div>
         <div class="stat-card">
-            <strong>SQLite</strong>
-            <span>Local archive</span>
+            <strong>{{ projects|length }}</strong>
+            <span>Projects</span>
         </div>
         <div class="stat-card">
             <strong>Live</strong>
@@ -32,9 +32,18 @@
         </div>
     </section>
 
+    <nav class="admin-content-nav" aria-label="Manage site content">
+        <a href="{{ url_for('add_blog') }}">New article</a>
+        <a href="{{ url_for('new_project_page') }}">New project</a>
+        <a href="/admin/pages/home">Home page</a>
+        <a href="/admin/pages/about">About page</a>
+        <a href="/admin/pages/contact">Contact page</a>
+        <a href="{{ url_for('edit_settings_form') }}">Settings</a>
+    </nav>
+
     <div class="admin-list-head">
-        <h2>All stories</h2>
-        <span>{{ articles|length }} entries in the notebook</span>
+        <h2>Articles</h2>
+        <a class="btn-small" href="{{ url_for('add_blog') }}">New article</a>
     </div>
 
     {% if articles %}
@@ -44,6 +53,7 @@
             <div class="admin-story-index">{{ "%02d"|format(loop.index) }}</div>
             <div class="admin-story-copy">
                 <h3>{{ article["title"] }}</h3>
+                <span class="status-badge">{{ 'Published' if article.is_published else 'Draft' }}</span>
                 {% if article["summary"] %}
                 <p>{{ article["summary"] }}</p>
                 {% else %}
@@ -66,5 +76,7 @@
         <p>Start with a title and let the first field note take shape.</p>
     </div>
     {% endif %}
+    <div class="admin-list-head project-admin-heading"><h2>Projects</h2><a class="btn-small" href="{{ url_for('new_project_page') }}">New project</a></div>
+    {% if projects %}<section class="admin-list">{% for project in projects %}<article class="admin-story"><div class="admin-story-index">{{ "%02d"|format(loop.index) }}</div><div class="admin-story-copy"><h3>{{ project.title }}</h3><p>{{ project.summary or 'No summary yet.' }}</p><span class="status-badge">{{ 'Published' if project.is_published else 'Draft' }}{% if project.is_featured %} · Featured{% endif %}</span></div><div class="admin-row-actions">{% if project.is_published %}<a class="btn-small" href="{{ url_for('project_detail', slug=project.slug) }}" target="_blank" rel="noopener">View</a>{% endif %}<a class="btn-small" href="/admin/projects/{{ project.id }}/edit">Edit</a><form class="inline-form" method="post" action="/admin/projects/{{ project.id }}/delete"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn-danger" type="submit">Delete</button></form></div></article>{% endfor %}</section>{% else %}<div class="empty-state"><h3>No projects yet.</h3><p>Create a draft now and add its details whenever they are ready.</p></div>{% endif %}
 </div>
 {% endblock %}

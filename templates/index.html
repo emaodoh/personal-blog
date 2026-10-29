@@ -1,92 +1,87 @@
 {% extends "base.html" %}
 
-{% block title %}MyBlog — Ideas, built out loud{% endblock %}
+{% block title %}{{ settings.owner_name }} — {{ settings.role }}{% endblock %}
 {% block body_class %}home-page{% endblock %}
 
 {% block content %}
 <section class="hero-cover">
     <div class="hero-inner">
         <div>
-            <p class="eyebrow">Personal field notes · Software, AI &amp; the long way round</p>
-            <h1 class="hero-title">Ideas worth <em>building</em> out loud.</h1>
-            <p class="hero-deck">
-                A working notebook about learning in public, making useful things,
-                and following curiosity through code, technology, and the occasional
-                detour.
-            </p>
+            <p class="eyebrow">{{ settings.role or 'Portfolio' }}</p>
+            <h1 class="hero-title">Hi, I’m <em>{{ settings.owner_name or 'Your Name' }}</em>.</h1>
+            <h2 class="home-subheading">{{ pages.home.title }}</h2>
+            <p class="hero-deck page-copy">{{ pages.home.content }}</p>
             <div class="hero-actions">
-                <a class="button" href="#articles">Read the journal</a>
-                <a class="text-link" href="#about">More about this place →</a>
+                <a class="button" href="#projects">Explore my work</a>
+                <a class="text-link" href="{{ url_for('contact_page') }}">Get in touch →</a>
             </div>
         </div>
 
-        <aside class="hero-note" aria-label="Currently exploring">
-            <p class="hero-note-label">Currently exploring</p>
+        <aside class="hero-note" aria-label="Professional links">
+            {% if settings.profile_image_url %}<img class="profile-photo" src="{{ settings.profile_image_url }}" alt="Photo of {{ settings.owner_name }}">{% else %}<div class="profile-photo-placeholder" aria-hidden="true">Add your photo in Settings</div>{% endif %}
+            <p class="hero-note-label">Find me online</p>
             <ul>
-                <li>Software craft</li>
-                <li>Artificial intelligence</li>
-                <li>Learning in public</li>
-                <li>Things made from scratch</li>
+                {% if settings.github_url %}<li><a href="{{ settings.github_url }}" target="_blank" rel="noopener">GitHub ↗</a></li>{% endif %}
+                {% if settings.linkedin_url %}<li><a href="{{ settings.linkedin_url }}" target="_blank" rel="noopener">LinkedIn ↗</a></li>{% endif %}
+                {% if settings.resume_url %}<li><a href="{{ settings.resume_url }}" target="_blank" rel="noopener">Résumé ↗</a></li>{% endif %}
+                {% if settings.contact_email %}<li><a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></li>{% endif %}
             </ul>
-            <span class="hero-stamp">{{ articles|length }} stories and counting</span>
+            <span class="hero-stamp">{{ projects|length }} featured projects</span>
         </aside>
     </div>
 </section>
 
-<section class="stories-section" id="articles">
+<section class="stories-section" id="projects">
     <div class="section-heading">
         <div>
-            <p class="eyebrow">The journal</p>
-            <h2>Latest field notes</h2>
+            <p class="eyebrow">Selected work</p>
+            <h2>Featured projects</h2>
         </div>
-        <p class="section-note">{{ articles|length }} entries · updated as I learn</p>
+        <a class="text-link" href="{{ url_for('projects_index') }}">All projects →</a>
     </div>
 
-    {% if articles %}
+    {% if projects %}
     <div class="story-grid">
-        {% for article in articles %}
+        {% for project in projects %}
         <article class="story-card{% if loop.first %} story-card--featured{% endif %}">
             <div class="story-card-top">
                 <span class="story-number">{{ "%02d"|format(loop.index) }}</span>
-                <span class="story-kicker">Journal entry</span>
+                <span class="story-kicker">Project{% if project.is_featured %} · Featured{% endif %}</span>
             </div>
+            <div class="project-media">{% if project.image_url %}<img class="project-thumb" src="{{ project.image_url }}" alt="Screenshot of {{ project.title }}">{% else %}<div class="project-image-placeholder" aria-label="Project image can be added later">Project image</div>{% endif %}</div>
 
             <h3>
-                <a href="{{ url_for('blog', article_id=article['id']) }}">{{ article["title"] }}</a>
+                <a href="{{ url_for('project_detail', slug=project.slug) }}">{{ project.title }}</a>
             </h3>
 
-            {% if article["summary"] %}
-            <p>{{ article["summary"] }}</p>
-            {% else %}
-            <p>Open the notebook to read this entry.</p>
-            {% endif %}
+            <p>{{ project.summary or 'Project details coming soon.' }}</p>
+            {% if project.technologies %}<p class="technology-list">{{ project.technologies }}</p>{% endif %}
 
-            <a class="story-link" href="{{ url_for('blog', article_id=article['id']) }}">
-                Read story <span aria-hidden="true">↗</span>
+            <a class="story-link" href="{{ url_for('project_detail', slug=project.slug) }}">
+                View project <span aria-hidden="true">↗</span>
             </a>
         </article>
         {% endfor %}
     </div>
     {% else %}
     <div class="empty-state">
-        <h3>The notebook is still blank.</h3>
-        <p>New stories will appear here as soon as they are published.</p>
+        <h3>Projects are on the way.</h3>
+        <p>Published projects will appear here.</p>
     </div>
     {% endif %}
 </section>
 
-<section class="about-section" id="about">
+<section class="about-section" id="articles">
     <div class="about-grid">
         <div>
-            <p class="eyebrow">About this place</p>
-            <h2>A notebook for the work behind the work.</h2>
+            <p class="eyebrow">Recent writing</p>
+            <h2>Notes from what I’m learning.</h2>
         </div>
-        <p class="about-copy">
-            This is my corner of the web for documenting what I am learning and
-            building: software engineering, AI, personal growth, and the small
-            decisions that turn an idea into something real. No polish required —
-            just honest notes from the process.
-        </p>
+        <div class="about-copy">
+            {% if articles %}<ul class="recent-posts">{% for article in articles %}<li><a href="{{ url_for('blog', article_id=article.id) }}">{{ article.title }}</a><span>{{ article.summary }}</span></li>{% endfor %}</ul>{% else %}<p>New articles will appear here.</p>{% endif %}
+            <a class="text-link" href="{{ url_for('blog_index') }}">Read all articles →</a>
+        </div>
     </div>
 </section>
+<section class="contact-strip" id="contact"><div><p class="eyebrow">Contact</p><h2>Have a project in mind?</h2></div><a class="button" href="{% if settings.contact_email %}mailto:{{ settings.contact_email }}{% else %}{{ url_for('contact_page') }}{% endif %}">Let’s talk →</a></section>
 {% endblock %}
