@@ -23,7 +23,6 @@ from .services import (
     add_article,
     delete_article,
     edit_article,
-    get_connection,
     get_article_by_id,
     load_article,
     load_projects,
@@ -34,6 +33,7 @@ from .services import (
     save_page,
     load_settings,
     save_settings,
+    upload_image,
 )
 
 
@@ -60,11 +60,8 @@ def _save_uploaded_image(upload, folder):
     )
     if not valid_signature:
         raise HTTPException(status_code=400, detail="The uploaded file is not a supported image.")
-    upload_dir = PROJECT_ROOT / "static" / "uploads" / folder
-    upload_dir.mkdir(parents=True, exist_ok=True)
     filename = f"{secrets.token_hex(12)}{extension}"
-    (upload_dir / filename).write_bytes(image_data)
-    return f"/static/uploads/{folder}/{filename}"
+    return upload_image(folder, filename, image_data, f"image/{image_type}")
 
 
 @router.get("/")
@@ -412,8 +409,8 @@ def update_settings(
 @router.get("/health")
 def health():
     try:
-        with get_connection() as connection:
-            connection.execute("SELECT 1").fetchone()
+        from .services import check_database
+        check_database()
     except Exception:
         return JSONResponse(
             {"status": "error", "database": "unavailable"},

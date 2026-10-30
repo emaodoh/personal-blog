@@ -8,7 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from routers import web, api
 from routers.auth import initialize_admin_auth
-from routers.services import initialize_database
+from routers.services import initialize_database, UPLOAD_DIR, UPLOAD_URL_PREFIX
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -45,6 +45,9 @@ def create_app():
         StaticFiles(directory=PROJECT_ROOT / "static"),
         name="static",
     )
+    if UPLOAD_URL_PREFIX == "/uploads":
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
     app.include_router(api.router, prefix="/api", tags=["REST API"])
     app.include_router(web.router, tags=["Web Pages"])
 

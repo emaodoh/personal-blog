@@ -9,7 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from routers.services import get_connection, initialize_database  # noqa: E402
+from routers.services import add_article, initialize_database, load_article  # noqa: E402
 
 
 def main():
@@ -33,21 +33,17 @@ def main():
     articles = json.loads(source_path.read_text(encoding="utf-8"))
     initialize_database()
 
-    with get_connection() as connection:
-        existing_count = connection.execute("SELECT COUNT(*) FROM articles").fetchone()[0]
-        if existing_count:
-            print(f"Database already has {existing_count} articles; seed skipped.")
-            return
+    existing_count = len(load_article())
+    if existing_count:
+        print(f"Database already has {existing_count} articles; seed skipped.")
+        return
 
-        for article in articles:
-            connection.execute(
-                "INSERT INTO articles (title, content, summary) VALUES (?, ?, ?)",
-                (
-                    article.get("title", ""),
-                    article.get("content", ""),
-                    article.get("summary") or "",
-                ),
-            )
+    for article in articles:
+        add_article(
+            article.get("title", ""),
+            article.get("content", ""),
+            article.get("summary") or "",
+        )
 
     print(f"Seeded {len(articles)} articles from {source_path}")
 
